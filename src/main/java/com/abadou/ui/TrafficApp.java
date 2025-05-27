@@ -60,11 +60,34 @@ public class TrafficApp extends Application {
         gc.fillRect(WIDTH / 2 - ROAD_WIDTH / 2, 0, ROAD_WIDTH, HEIGHT); // verticale
         gc.fillRect(0, HEIGHT / 2 - ROAD_WIDTH / 2, WIDTH, ROAD_WIDTH); // horizontale
 
-        // LIGNES CENTRALES
+        // LIGNES CENTRALES BLANCHES
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(2);
         gc.strokeLine(WIDTH / 2, 0, WIDTH / 2, HEIGHT);   // verticale
         gc.strokeLine(0, HEIGHT / 2, WIDTH, HEIGHT / 2);  // horizontale
+
+        // 🚧 LIGNES POINTILLÉES JAUNES POUR SÉPARATION DES 4 VOIES
+        gc.setStroke(Color.YELLOW);
+        gc.setLineWidth(1.5);
+        gc.setLineDashes(10);
+
+        // Ligne verticale gauche (sépare voie 1/2 dans sens Nord-Sud) sauf croisement
+        gc.strokeLine(375, 0, 375, 340);
+        gc.strokeLine(375, 460, 375, HEIGHT);
+
+        // Ligne verticale droite (sépare voie 1/2 dans sens Sud-Nord) sauf croisement
+        gc.strokeLine(425, 0, 425, 340);
+        gc.strokeLine(425, 460, 425, HEIGHT);
+
+        // Ligne horizontale haut (sépare voie 1/2 dans sens Est-Ouest)
+        gc.strokeLine(0, 375, 340, 375);
+        gc.strokeLine(460, 375, WIDTH, 375);
+
+        // Ligne horizontale bas (sépare voie 1/2 dans sens Ouest-Est)
+        gc.strokeLine(0, 425, 340, 425);
+        gc.strokeLine(460, 425, WIDTH, 425);
+
+        gc.setLineDashes(0); // reset pointillés
 
         // LIGNES D'ARRÊT
         gc.setStroke(Color.RED);
@@ -75,10 +98,10 @@ public class TrafficApp extends Application {
         gc.strokeLine(460, 390, 460, 410); // Est
 
         // FEUX
-        drawFeu(gc, "FeuN", 330, 330); // en haut à droite
-        drawFeu(gc, "FeuS", 450, 450); // en bas à droite
-        drawFeu(gc, "FeuE", 450, 330); // à droite en haut
-        drawFeu(gc, "FeuO", 330, 450); // à gauche en haut
+        drawFeu(gc, "FeuN", 330, 330);
+        drawFeu(gc, "FeuS", 450, 450);
+        drawFeu(gc, "FeuE", 450, 330);
+        drawFeu(gc, "FeuO", 330, 450);
 
         // VÉHICULES
         drawVehicles(gc);
