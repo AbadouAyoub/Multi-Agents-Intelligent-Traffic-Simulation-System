@@ -142,6 +142,12 @@ public class TrafficApp extends Application {
         }
     }
 
+    public static boolean isIntersectionVide() {
+        return vehiclePositions.values().stream().noneMatch(pos ->
+                pos[0] >= 340 && pos[0] <= 460 && pos[1] >= 340 && pos[1] <= 460
+        );
+    }
+
     public static void main(String[] args) {
         launch(args);
     }

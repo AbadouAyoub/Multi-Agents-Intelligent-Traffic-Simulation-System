@@ -7,6 +7,8 @@ import jade.lang.acl.ACLMessage;
 
 import java.util.List;
 
+import com.abadou.ui.TrafficApp;
+
 public class CoordinatorAgent extends Agent {
 
     private EtatCycle etatCycle = EtatCycle.VERT_NS;
@@ -41,9 +43,12 @@ public class CoordinatorAgent extends Agent {
                     case ORANGE_NS:
                         if (elapsed >= 2000) {
                             nordSud.forEach(f -> sendMessage(f, "setEtat:ROUGE"));
-                            estOuest.forEach(f -> sendMessage(f, "setEtat:VERT"));
-                            lastTransition = now;
-                            etatCycle = EtatCycle.VERT_EO;
+
+                            if (TrafficApp.isIntersectionVide()) {
+                                estOuest.forEach(f -> sendMessage(f, "setEtat:VERT"));
+                                lastTransition = now;
+                                etatCycle = EtatCycle.VERT_EO;
+                            } // sinon, on reste bloqué en ORANGE_NS
                         }
                         break;
 
@@ -58,9 +63,12 @@ public class CoordinatorAgent extends Agent {
                     case ORANGE_EO:
                         if (elapsed >= 2000) {
                             estOuest.forEach(f -> sendMessage(f, "setEtat:ROUGE"));
-                            nordSud.forEach(f -> sendMessage(f, "setEtat:VERT"));
-                            lastTransition = now;
-                            etatCycle = EtatCycle.VERT_NS;
+
+                            if (TrafficApp.isIntersectionVide()) {
+                                nordSud.forEach(f -> sendMessage(f, "setEtat:VERT"));
+                                lastTransition = now;
+                                etatCycle = EtatCycle.VERT_NS;
+                            } // sinon, on reste bloqué en ORANGE_EO
                         }
                         break;
                 }

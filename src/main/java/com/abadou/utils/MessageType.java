@@ -6,5 +6,7 @@ public enum MessageType {
     SIGNAL,
     STATUS,
     COMMAND,
-    RESPONSE
+    RESPONSE,
+    POSITION,
+    INTENTION
 }
