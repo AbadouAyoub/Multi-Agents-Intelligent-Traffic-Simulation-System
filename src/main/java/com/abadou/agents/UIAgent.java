@@ -12,15 +12,19 @@ public class UIAgent extends Agent {
         System.out.println(getLocalName() + " prêt à recevoir les mises à jour UI...");
 
         addBehaviour(new CyclicBehaviour() {
+            @Override
             public void action() {
                 ACLMessage msg = receive();
+
                 if (msg != null) {
                     String[] parts = msg.getContent().split(":");
-                    if (parts[0].equals("POSITION") && parts.length >= 4) {
+
+                    if (parts[0].equals("POSITION") && parts.length == 5) {
                         String name = parts[1];
                         double x = Double.parseDouble(parts[2]);
                         double y = Double.parseDouble(parts[3]);
-                        TrafficApp.updateVehicle(name, x, y);
+                        String dir = parts[4];
+                        TrafficApp.updateVehicle(name, x, y, dir);
                     }
                 } else {
                     block();

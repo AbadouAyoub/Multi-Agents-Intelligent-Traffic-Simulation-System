@@ -10,7 +10,7 @@ import javafx.application.Application;
 public class Main {
 
     public static void main(String[] args) {
-        // ✅ Lancer l'interface graphique JavaFX
+        // Lancer l'interface graphique JavaFX
         new Thread(() -> Application.launch(TrafficApp.class)).start();
 
         try {
@@ -19,7 +19,7 @@ public class Main {
             profile.setParameter(Profile.GUI, "true");
             ContainerController container = rt.createMainContainer(profile);
 
-            // Agents standards
+            // Agents communs
             container.createNewAgent("UI", "com.abadou.agents.UIAgent", null).start();
             container.createNewAgent("FeuN", "com.abadou.agents.TrafficLightAgent", null).start();
             container.createNewAgent("FeuS", "com.abadou.agents.TrafficLightAgent", null).start();
@@ -27,14 +27,49 @@ public class Main {
             container.createNewAgent("FeuO", "com.abadou.agents.TrafficLightAgent", null).start();
             container.createNewAgent("Coordinator", "com.abadou.agents.CoordinatorAgent", null).start();
 
-            // 🚗 Scénario 1 : 4 véhicules, un par direction
-            container.createNewAgent("VehicleNord", "com.abadou.agents.VehicleAgent", new Object[]{"NORD"}).start();
-            container.createNewAgent("VehicleSud", "com.abadou.agents.VehicleAgent", new Object[]{"SUD"}).start();
-            container.createNewAgent("VehicleEst", "com.abadou.agents.VehicleAgent", new Object[]{"EST"}).start();
-            container.createNewAgent("VehicleOuest", "com.abadou.agents.VehicleAgent", new Object[]{"OUEST"}).start();
+            // ================================
+            // 🔁 ACTIVER LE SCÉNARIO DÉSIRÉ :
+            // ================================
+
+            // scenario1_CroisementBasique(container); // ✅ Inactif pour ce test
+            // scenario2_Depassement(container);        // ✅ Actif pour ce test
+            scenario3_ViragesOpposes(container);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    // 🔷 Scénario 1 : Croisement simple 4 véhicules
+    public static void scenario1_CroisementBasique(ContainerController container) throws Exception {
+        container.createNewAgent("VehicleNord", "com.abadou.agents.VehicleAgent", new Object[]{"NORD"}).start();
+        container.createNewAgent("VehicleSud", "com.abadou.agents.VehicleAgent", new Object[]{"SUD"}).start();
+        container.createNewAgent("VehicleEst", "com.abadou.agents.VehicleAgent", new Object[]{"EST"}).start();
+        container.createNewAgent("VehicleOuest", "com.abadou.agents.VehicleAgent", new Object[]{"OUEST"}).start();
+    }
+
+    // 🔷 Scénario 2 : Véhicule fixe à mi-distance + dépassement voie 2
+    public static void scenario2_Depassement(ContainerController container) throws Exception {
+        // 🚗 Véhicule fixe (obstacle)
+        container.createNewAgent("VehicleFixeNord", "com.abadou.agents.VehicleAgent", new Object[]{"NORD", "ARRET"}).start();
+
+        // 🚙 Véhicule mobile qui dépasse
+        Thread.sleep(2000); // laisse le temps à l'obstacle de s'installer
+        container.createNewAgent("VehicleDepasseurNord", "com.abadou.agents.VehicleAgent", new Object[]{"NORD", "DEPASSER"}).start();
+    }
+
+    // 🔷 Scénario 3 : Deux véhicules se croisent, l’un tourne à droite (Nord→Est), l’autre à gauche (Sud→Est)
+    public static void scenario3_ViragesOpposes(ContainerController container) throws Exception {
+        // 🚗 Véhicule venant du Nord et tournant à droite (vers l'Est)
+        container.createNewAgent("VehicleNordTourneDroite", "com.abadou.agents.VehicleAgent",
+                new Object[]{"NORD", "TOURNER_DROITE"}).start();
+
+        // ⏳ Petit délai pour éviter les collisions immédiates
+        Thread.sleep(1000);
+
+        // 🚗 Véhicule venant du Sud et tournant à gauche (vers l'Est aussi)
+        container.createNewAgent("VehicleSudTourneGauche", "com.abadou.agents.VehicleAgent",
+                new Object[]{"SUD", "TOURNER_GAUCHE"}).start();
+    }
+
 }

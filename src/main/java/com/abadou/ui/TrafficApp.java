@@ -20,10 +20,12 @@ public class TrafficApp extends Application {
     private static final int FEU_SIZE = 20;
 
     private static final Map<String, double[]> vehiclePositions = new ConcurrentHashMap<>();
+    private static final Map<String, String> vehicleDirections = new ConcurrentHashMap<>();
     private static final Map<String, String> feuStates = new ConcurrentHashMap<>();
 
-    public static void updateVehicle(String name, double x, double y) {
+    public static void updateVehicle(String name, double x, double y, String dir) {
         vehiclePositions.put(name, new double[]{x, y});
+        vehicleDirections.put(name, dir);
     }
 
     public static void updateFeu(String feuName, String etat) {
@@ -55,41 +57,28 @@ public class TrafficApp extends Application {
         gc.setFill(Color.LIGHTGRAY);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
 
-        // ROUTES
+        // Routes
         gc.setFill(Color.DARKGRAY);
         gc.fillRect(WIDTH / 2 - ROAD_WIDTH / 2, 0, ROAD_WIDTH, HEIGHT); // verticale
         gc.fillRect(0, HEIGHT / 2 - ROAD_WIDTH / 2, WIDTH, ROAD_WIDTH); // horizontale
 
-        // LIGNES CENTRALES BLANCHES
+        // Lignes centrales blanches
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(2);
-        gc.strokeLine(WIDTH / 2, 0, WIDTH / 2, HEIGHT);   // verticale
-        gc.strokeLine(0, HEIGHT / 2, WIDTH, HEIGHT / 2);  // horizontale
+        gc.strokeLine(WIDTH / 2, 0, WIDTH / 2, HEIGHT);
+        gc.strokeLine(0, HEIGHT / 2, WIDTH, HEIGHT / 2);
 
-        // 🚧 LIGNES POINTILLÉES JAUNES POUR SÉPARATION DES 4 VOIES
+        // Lignes pointillées jaunes (séparation voies)
         gc.setStroke(Color.YELLOW);
         gc.setLineWidth(1.5);
         gc.setLineDashes(10);
+        gc.strokeLine(375, 0, 375, 340);  gc.strokeLine(375, 460, 375, HEIGHT);
+        gc.strokeLine(425, 0, 425, 340);  gc.strokeLine(425, 460, 425, HEIGHT);
+        gc.strokeLine(0, 375, 340, 375);  gc.strokeLine(460, 375, WIDTH, 375);
+        gc.strokeLine(0, 425, 340, 425);  gc.strokeLine(460, 425, WIDTH, 425);
+        gc.setLineDashes(0); // reset
 
-        // Ligne verticale gauche (sépare voie 1/2 dans sens Nord-Sud) sauf croisement
-        gc.strokeLine(375, 0, 375, 340);
-        gc.strokeLine(375, 460, 375, HEIGHT);
-
-        // Ligne verticale droite (sépare voie 1/2 dans sens Sud-Nord) sauf croisement
-        gc.strokeLine(425, 0, 425, 340);
-        gc.strokeLine(425, 460, 425, HEIGHT);
-
-        // Ligne horizontale haut (sépare voie 1/2 dans sens Est-Ouest)
-        gc.strokeLine(0, 375, 340, 375);
-        gc.strokeLine(460, 375, WIDTH, 375);
-
-        // Ligne horizontale bas (sépare voie 1/2 dans sens Ouest-Est)
-        gc.strokeLine(0, 425, 340, 425);
-        gc.strokeLine(460, 425, WIDTH, 425);
-
-        gc.setLineDashes(0); // reset pointillés
-
-        // LIGNES D'ARRÊT
+        // Lignes d’arrêt rouges
         gc.setStroke(Color.RED);
         gc.setLineWidth(1);
         gc.strokeLine(390, 340, 410, 340); // Nord
@@ -97,13 +86,11 @@ public class TrafficApp extends Application {
         gc.strokeLine(340, 390, 340, 410); // Ouest
         gc.strokeLine(460, 390, 460, 410); // Est
 
-        // FEUX
         drawFeu(gc, "FeuN", 330, 330);
         drawFeu(gc, "FeuS", 450, 450);
         drawFeu(gc, "FeuE", 450, 330);
         drawFeu(gc, "FeuO", 330, 450);
 
-        // VÉHICULES
         drawVehicles(gc);
     }
 
@@ -115,28 +102,22 @@ public class TrafficApp extends Application {
                         "ORANGE".equalsIgnoreCase(etat) ? Color.ORANGE :
                                 Color.RED
         );
-
         gc.fillOval(x, y, FEU_SIZE, FEU_SIZE);
     }
 
     private void drawVehicles(GraphicsContext gc) {
         gc.setFill(Color.BLUE);
-
         for (Map.Entry<String, double[]> entry : vehiclePositions.entrySet()) {
             String name = entry.getKey();
             double[] pos = entry.getValue();
             double x = pos[0];
             double y = pos[1];
+            String dir = vehicleDirections.getOrDefault(name, "NORD");
 
-            // Identifier le sens du véhicule par son nom
-            boolean estVertical = name.toUpperCase().contains("NORD") || name.toUpperCase().contains("SUD");
-            boolean estHorizontal = name.toUpperCase().contains("EST") || name.toUpperCase().contains("OUEST");
-
+            boolean estVertical = dir.equals("NORD") || dir.equals("SUD");
             if (estVertical) {
-                // Véhicule Nord/Sud → vertical
                 gc.fillRect(x - 5, y - 15, 10, 30);
-            } else if (estHorizontal) {
-                // Véhicule Est/Ouest → horizontal
+            } else {
                 gc.fillRect(x - 15, y - 5, 30, 10);
             }
         }
