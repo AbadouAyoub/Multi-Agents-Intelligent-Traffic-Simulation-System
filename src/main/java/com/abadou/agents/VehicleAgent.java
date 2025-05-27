@@ -12,6 +12,7 @@ public class VehicleAgent extends Agent {
     private String direction = "NORD";
     private String intentionDirection = "TOUT_DROIT";
     private boolean virageEffectue = false;
+    private int demiTourPhase = 0;
 
     private double x, y;
     private static final double VITESSE = 1.0;
@@ -54,7 +55,22 @@ public class VehicleAgent extends Agent {
                 };
 
                 if (!doitStop) {
-                    if (!virageEffectue && intentionDirection.equals("TOURNER_DROITE")) {
+
+                    // 🔁 DEMI-TOUR à 180° en 3 étapes
+                    if (intentionDirection.equals("DEMI_TOUR")) {
+                        if (demiTourPhase == 0 && directionInit.equals("NORD") && y >= 460) {
+                            direction = "OUEST";
+                            y = 440;
+                            demiTourPhase = 1;
+                        } else if (demiTourPhase == 1 && x >= 460) {
+                            direction = "SUD";
+                            x = 440;
+                            demiTourPhase = 2;
+                        }
+                    }
+
+                    // 🔄 Virage standard
+                    else if (!virageEffectue && intentionDirection.equals("TOURNER_DROITE")) {
                         if (directionInit.equals("NORD") && y >= 380) {
                             direction = "EST"; y = 360; virageEffectue = true;
                         } else if (directionInit.equals("SUD") && y <= 420) {

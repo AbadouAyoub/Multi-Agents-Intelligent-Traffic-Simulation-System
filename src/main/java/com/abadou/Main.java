@@ -33,7 +33,8 @@ public class Main {
 
             // scenario1_CroisementBasique(container); // ✅ Inactif pour ce test
             // scenario2_Depassement(container);        // ✅ Actif pour ce test
-            scenario3_ViragesOpposes(container);
+            // scenario3_ViragesOpposes(container);
+            scenario4_DemiTour(container);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,6 +71,11 @@ public class Main {
         // 🚗 Véhicule venant du Sud et tournant à gauche (vers l'Est aussi)
         container.createNewAgent("VehicleSudTourneGauche", "com.abadou.agents.VehicleAgent",
                 new Object[]{"SUD", "TOURNER_GAUCHE"}).start();
+    }
+
+    // 🔷 Scénario 4 : Demi-tour d’un véhicule (NORD → SUD via 2 virages à gauche)
+    public static void scenario4_DemiTour(ContainerController container) throws Exception {
+        container.createNewAgent("VehicleDemiTour", "com.abadou.agents.VehicleAgent", new Object[]{"NORD", "DEMI_TOUR"}).start();
     }
 
 }
