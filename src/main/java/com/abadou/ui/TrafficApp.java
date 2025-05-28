@@ -18,14 +18,25 @@ public class TrafficApp extends Application {
     private static final int HEIGHT = 800;
     private static final int ROAD_WIDTH = 100;
     private static final int FEU_SIZE = 20;
+    private static final int OBSTACLE_SIZE = 20;
 
     private static final Map<String, double[]> vehiclePositions = new ConcurrentHashMap<>();
     private static final Map<String, String> vehicleDirections = new ConcurrentHashMap<>();
     private static final Map<String, String> feuStates = new ConcurrentHashMap<>();
+    private static double obstacleX = -1; // Static obstacle position
+    private static double obstacleY = -1;
 
     public static void updateVehicle(String name, double x, double y, String dir) {
         vehiclePositions.put(name, new double[]{x, y});
         vehicleDirections.put(name, dir);
+<<<<<<< HEAD
+=======
+    }
+
+    public static void removeVehicle(String name) {
+        vehiclePositions.remove(name);
+        vehicleDirections.remove(name);
+>>>>>>> 6370002 (ajout de scenarios)
     }
 
     public static void updateFeu(String feuName, String etat) {
@@ -34,6 +45,50 @@ public class TrafficApp extends Application {
 
     public static boolean isFeuVert(String feuName) {
         return "VERT".equalsIgnoreCase(feuStates.getOrDefault(feuName, "ROUGE"));
+    }
+
+    public static String getFeuState(String feuName) {
+        return feuStates.getOrDefault(feuName, "ROUGE");
+    }
+
+    // Set obstacle position (called by Main.java for scenario6)
+    public static void setObstacle(double x, double y) {
+        obstacleX = x;
+        obstacleY = y;
+    }
+
+    // Getters for obstacle position
+    public static double getObstacleX() {
+        return obstacleX;
+    }
+
+    public static double getObstacleY() {
+        return obstacleY;
+    }
+
+    public static Map<String, double[]> getVehiclePositions() {
+        return vehiclePositions;
+    }
+
+    public static Map<String, String> getVehicleDirections() {
+        return vehicleDirections;
+    }
+
+    public static Map<String, Integer> getVehicleCountsByDirection() {
+        Map<String, Integer> counts = new ConcurrentHashMap<>();
+        counts.put("NORD", 0);
+        counts.put("SUD", 0);
+        counts.put("EST", 0);
+        counts.put("OUEST", 0);
+
+        for (Map.Entry<String, String> entry : vehicleDirections.entrySet()) {
+            String direction = entry.getValue();
+            if (direction != null) {
+                counts.put(direction, counts.getOrDefault(direction, 0) + 1);
+            }
+        }
+
+        return counts;
     }
 
     @Override
@@ -86,6 +141,15 @@ public class TrafficApp extends Application {
         gc.strokeLine(340, 390, 340, 410); // Ouest
         gc.strokeLine(460, 390, 460, 410); // Est
 
+<<<<<<< HEAD
+=======
+        // Draw obstacle if set
+        if (obstacleX != -1 && obstacleY != -1) {
+            gc.setFill(Color.RED);
+            gc.fillRect(obstacleX - OBSTACLE_SIZE / 2, obstacleY - OBSTACLE_SIZE / 2, OBSTACLE_SIZE, OBSTACLE_SIZE);
+        }
+
+>>>>>>> 6370002 (ajout de scenarios)
         drawFeu(gc, "FeuN", 330, 330);
         drawFeu(gc, "FeuS", 450, 450);
         drawFeu(gc, "FeuE", 450, 330);

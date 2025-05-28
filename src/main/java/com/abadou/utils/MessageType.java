@@ -9,4 +9,8 @@ public enum MessageType {
     RESPONSE,
     POSITION,
     INTENTION
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 6370002 (ajout de scenarios)
